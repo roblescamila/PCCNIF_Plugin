@@ -1,7 +1,7 @@
 import ij.*;
 import ij.plugin.*;
 import java.io.File;
-public class PCCNIF_Plugin implements PlugIn {
+public class CC_Plugin implements PlugIn {
 
     // paths and file names
     private String workPath = "C:\\Data\\PDI\\Exp061";

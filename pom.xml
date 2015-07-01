@@ -13,10 +13,10 @@
     </parent>
 
     <groupId>sc.fiji</groupId>
-    <artifactId>CC_Plugin</artifactId>
+    <artifactId>PCCNIF_Plugin</artifactId>
     <version>0.2.0-SNAPSHOT</version>
 
-    <name>plugins/CC_Plugin.jar</name>
+    <name>plugins/PCCNIF_Plugin.jar</name>
     <description>A Maven project implementing an ImageJ 1.x plugin</description>
 
     <developers>
@@ -51,7 +51,7 @@
     </scm>
 
     <properties>
-        <main-class>CC_Plugin</main-class>
+        <main-class>PCCNIF_Plugin</main-class>
         <deployDir>C:\Program Files\Fiji\plugins</deployDir>
     </properties>
 
