@@ -6,7 +6,7 @@ public class PCCNIF_Plugin implements PlugIn {
     // Paths and file names
     private String workPath = "C:\\Data\\PDI";
     private String resultsPath = workPath + "\\results";
-    private String expImageFileName = "Exp061_D5_1_dcxcy3_HAcy2_bIIItubcy5_dapi_20X.czi";
+    private String expImageFileName = "Exp035_C5_a_dcxcy3_flagcy2_bIIItubcy5_dapi_20X.czi";
 
     public void run(String arg) {
 
@@ -14,7 +14,6 @@ public class PCCNIF_Plugin implements PlugIn {
 
         //Open czi image
         IJ.run("Bio-Formats Importer", "open=" + filename + " autoscale color_mode=Grayscale open_files split_channels view=Hyperstack stack_order=XYCZT");
-
 
         // Close channels 1 and 2 since we do not use them
         IJ.selectWindow(expImageFileName + " - C=1");
