@@ -66,7 +66,6 @@ public class PCCNIF_Plugin implements PlugIn {
 
     }
 
-
     /**
      * Channel is the blue channel that contains the cells' nuclei
      *
