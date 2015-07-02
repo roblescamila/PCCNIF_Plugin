@@ -3,11 +3,10 @@ import ij.plugin.*;
 import java.io.File;
 public class PCCNIF_Plugin implements PlugIn {
 
-    // paths and file names
-    private String workPath = "C:\\Data\\PDI\\Exp061";
+    // Paths and file names
+    private String workPath = "C:\\Data\\PDI";
     private String resultsPath = workPath + "\\results";
-
-    private String expImageFileName = "Exp003_C6_2_dcx_flag_dapi_20x.czi";
+    private String expImageFileName = "Exp061_D5_1_dcxcy3_HAcy2_bIIItubcy5_dapi_20X.czi";
 
     public void run(String arg) {
 
