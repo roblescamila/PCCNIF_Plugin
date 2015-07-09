@@ -52,7 +52,7 @@
 
     <properties>
         <main-class>PCCNIF_Plugin</main-class>
-        <deployDir>C:\Program Files\Fiji\plugins</deployDir>
+        <deployDir>C:\Fiji.app\plugins</deployDir>
     </properties>
 
     <dependencies>

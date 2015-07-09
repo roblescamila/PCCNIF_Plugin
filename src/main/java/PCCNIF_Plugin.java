@@ -14,7 +14,7 @@ public class PCCNIF_Plugin implements PlugIn {
 
         //Open czi image
         IJ.run("Bio-Formats Importer", "open=" + filename + " autoscale color_mode=Grayscale open_files split_channels view=Hyperstack stack_order=XYCZT");
-
+        /*
         // Close channels 1 and 2 since we do not use them
         IJ.selectWindow(expImageFileName + " - C=1");
         IJ.run("Close", "");
@@ -31,7 +31,7 @@ public class PCCNIF_Plugin implements PlugIn {
 
 
         //close all unnecessary windows
-        /*
+        
         nucleiMask.changes= false;
         nucleiMask.show();
         IJ.run("Close");
@@ -39,7 +39,7 @@ public class PCCNIF_Plugin implements PlugIn {
         greenChImg.changes= false;
         greenChImg.show();
         IJ.run("Close");
-        */
+        
         //proceed with processing n min image
         minImg.show();
 
@@ -66,11 +66,10 @@ public class PCCNIF_Plugin implements PlugIn {
 
     }
 
-    /**
      * Channel is the blue channel that contains the cells' nuclei
      *
      * @return mask a binary mask representing the nuclei morphology for all cells
-     */
+
     private ImagePlus generateNucleiMask(ImagePlus blueChannel) {
 
         // pre-processing //
@@ -108,10 +107,10 @@ public class PCCNIF_Plugin implements PlugIn {
     }
 
 
-    /**
+    
      * @param imp the segmented image of channel 3 with the channel 0 mask
      * @return the outline of all positive matches
-     */
+  
     public ImagePlus countGreenMatches(ImagePlus imp) {
 
         IJ.run(imp, "Enhance Contrast...", "saturated=0.9 equalize");
@@ -122,7 +121,7 @@ public class PCCNIF_Plugin implements PlugIn {
 
         //return imp modified
         return imp;
-
-    }
+*/
+    } 
 
 }
