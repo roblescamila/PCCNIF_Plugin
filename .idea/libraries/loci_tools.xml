@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="loci_tools">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../loci_tools.jar!/" />
+      <root url="jar://$PROJECT_DIR$/loci_tools.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
