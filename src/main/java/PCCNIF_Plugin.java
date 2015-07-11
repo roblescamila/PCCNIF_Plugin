@@ -50,7 +50,7 @@ public class PCCNIF_Plugin implements PlugIn {
 
     public void run(String arg) {
 
-        
+
         // Open czi image
         try {
             ImporterOptions options = new ImporterOptions();
@@ -123,25 +123,24 @@ public class PCCNIF_Plugin implements PlugIn {
 
     private ImagePlus generateNucleiMask(ImagePlus redChannel) {
 
-        // pre-processing //
+        // Pre-processing //
         IJ.run(redChannel, "Enhance Contrast...", "saturated=0.9 equalize");
 
-        // processing //
-
-        //subtract background
+        // Processing //
+        // Subtract background
         IJ.run(redChannel, "Subtract Background...", "rolling=50");
 
-        //threshold with black background
+        // Threshold with black background
         IJ.setAutoThreshold(redChannel, "Default");
         Prefs.blackBackground = true;
 
-        //convert to mask
+        // Convert to mask
         IJ.run(redChannel, "Convert to Mask", "");
 
-        // apply closing operation to fill holes in cell nuclei
+        // Apply closing operation to fill holes in cell nuclei
         IJ.run(redChannel, "Close-", "");
 
-        //apply watershed filter to separate nuclei clusters
+        // Apply watershed filter to separate nuclei clusters
         IJ.run(redChannel, "Watershed", "");
 
         return redChannel;
@@ -168,14 +167,13 @@ public class PCCNIF_Plugin implements PlugIn {
         IJ.run(imp, "Convert to Mask", "");
         IJ.run(imp, "Analyze Particles...", "size=10-Infinity circularity=0.40-1.00 show=Outlines display clear record in_situ");
 
-        //return imp modified
+        // Return imp modified
         return imp;
 
     }
 
-
     public static void main(String[] args) {
-        // set the plugins.dir property to make the plugin appear in the Plugins menu
+        // Set the plugins.dir property to make the plugin appear in the Plugins menu
         Class<?> clazz;
         clazz = PCCNIF_Plugin.class;
         String url = clazz.getResource("/" + clazz.getName().replace('.', '/') + ".class").toString();
