@@ -34,7 +34,6 @@ import loci.common.Region;
 import loci.formats.FormatException;
 import loci.plugins.BF;
 import loci.plugins.in.ImporterOptions;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -46,50 +45,45 @@ public class PCCNIF_Plugin implements PlugIn {
     // Paths and file names
     private String dir = "C:\\Data\\PDI\\";
     private String resultsPath = dir + "results";
-    private String name = "Exp035_C5_a_dcxcy3_flagcy2_bIIItubcy5_dapi_20X.czi";
+    private String name = "Exp035_D5_a_dcxcy3_flagcy2_bIIItubcy5_dapi_20X.czi";
     String id = dir + name;
 
     public void run(String arg) {
-        //OpenDialog od = new OpenDialog("Open Image File...", arg);
-        //String  = od.getDirectory();
-        //String  = od.getFileName()
 
-        //Open czi image
+        
+        // Open czi image
         try {
             ImporterOptions options = new ImporterOptions();
             options.setId(id);
             options.setAutoscale(true);
-            options.setColorMode(ImporterOptions.COLOR_MODE_COMPOSITE);
+            options.setStitchTiles(true);
+            options.setColorMode(ImporterOptions.COLOR_MODE_DEFAULT);
             options.setSplitChannels(true);
             options.isViewHyperstack();
             options.setStackOrder("XYCZT");
             ImagePlus[] imps = BF.openImagePlus(options);
             for (ImagePlus imp : imps) imp.show();
-        }
-        catch (FormatException exc) {
+        } catch (FormatException exc) {
             IJ.error("Sorry, an error occurred: " + exc.getMessage());
-        }
-        catch (IOException exc) {
+        } catch (IOException exc) {
             IJ.error("Sorry, an error occurred: " + exc.getMessage());
         }
 
-        // Close channels 1 and 2 since we do not use them
-        IJ.selectWindow(name + " - C=1");
-        IJ.run("Close", "");
+        // Close channels 2 and 3 since we do not use them
         IJ.selectWindow(name + " - C=2");
-        IJ.run("Close", "");
+        IJ.run("Close");
+        IJ.selectWindow(name + " - C=3");
+        IJ.run("Close");
 
-        //Generate a nuclei mask from the blue channel
-        ImagePlus blueChannel = WindowManager.getImage(name + " - C=0");
-        ImagePlus nucleiMask = generateNucleiMask(blueChannel);
+        // Generate a nuclei mask from the red channel
+        ImagePlus redChannel = WindowManager.getImage(name + " - C=0");
+        ImagePlus nucleiMask = generateNucleiMask(redChannel);
 
-        //apply the nuclei mask to the green channel
-        ImagePlus greenChImg = WindowManager.getImage(name + " - C=3");
+        // Apply the nuclei mask to the green channel
+        ImagePlus greenChImg = WindowManager.getImage(name + " - C=1");
         ImagePlus minImg = applyMaskToGreenChannel(nucleiMask, greenChImg);
 
-
-        //close all unnecessary windows
-
+        // Close all unnecessary windows
         nucleiMask.changes= false;
         nucleiMask.show();
         IJ.run("Close");
@@ -98,57 +92,59 @@ public class PCCNIF_Plugin implements PlugIn {
         greenChImg.show();
         IJ.run("Close");
 
-        //proceed with processing n min image
+        // Proceed with processing n min image
         minImg.show();
 
-        //Get positive matches
+        // Get positive matches
         ImagePlus outlines = countGreenMatches(minImg);
 
 
-        // Save image calculation
-        // create results dir
+        // Save image calculation //
+
+        // Create results dir
         File newDir = new File(resultsPath);
         newDir.mkdirs();
 
-        //save image
+        // Save image
         IJ.saveAs(outlines, "PNG", resultsPath + "\\" + name + " - result.bmp");
 
-        // save count results
+        // Save count results
         IJ.saveAs("Results", resultsPath + "\\Results.xls");
 
-        //IJ.run("Close", "");
-        //outlines.close();
+        IJ.run("Close", "");
+        outlines.close();
     }
 
     /*
-    * Channel is the blue channel that contains the cells' nuclei
+    * Channel is the red channel that contains the cells' nuclei
     *
     * @return mask a binary mask representing the nuclei morphology for all cells
-   */
-    private ImagePlus generateNucleiMask(ImagePlus blueChannel) {
+    */
+
+    private ImagePlus generateNucleiMask(ImagePlus redChannel) {
 
         // pre-processing //
-        IJ.run(blueChannel, "Enhance Contrast...", "saturated=0.9 equalize");
+        IJ.run(redChannel, "Enhance Contrast...", "saturated=0.9 equalize");
 
         // processing //
 
         //subtract background
-        IJ.run(blueChannel, "Subtract Background...", "rolling=50");
+        IJ.run(redChannel, "Subtract Background...", "rolling=50");
 
         //threshold with black background
-  //      IJ.setAutoThreshold(blueChannel, "Default dark");
-  //      Prefs.blackBackground = true;
+        IJ.setAutoThreshold(redChannel, "Default");
+        Prefs.blackBackground = true;
 
         //convert to mask
-        IJ.run(blueChannel, "Convert to Mask", "");
+        IJ.run(redChannel, "Convert to Mask", "");
 
         // apply closing operation to fill holes in cell nuclei
-        IJ.run(blueChannel, "Close-", "");
+        IJ.run(redChannel, "Close-", "");
 
         //apply watershed filter to separate nuclei clusters
-        IJ.run(blueChannel, "Watershed", "");
+        IJ.run(redChannel, "Watershed", "");
 
-        return blueChannel;
+        return redChannel;
     }
 
     // Apply segmentation mask from blue channel to green channel to eliminate information outside the cells nuclei
@@ -176,6 +172,8 @@ public class PCCNIF_Plugin implements PlugIn {
         return imp;
 
     }
+
+
     public static void main(String[] args) {
         // set the plugins.dir property to make the plugin appear in the Plugins menu
         Class<?> clazz;
