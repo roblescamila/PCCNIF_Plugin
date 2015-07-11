@@ -30,8 +30,10 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.io.OpenDialog;
 import ij.plugin.PlugIn;
+import loci.common.Region;
 import loci.formats.FormatException;
 import loci.plugins.BF;
+import loci.plugins.in.ImporterOptions;
 
 import java.io.IOException;
 
@@ -40,14 +42,27 @@ import java.io.IOException;
  */
 public class Abridor implements PlugIn {
 
-    public void run(String arg) {
-        OpenDialog od = new OpenDialog("Open Image File...", arg);
-        String dir = od.getDirectory();
-        String name = od.getFileName();
-        String id = dir + name;
+    // Paths and file names
+    private String dir = "C:\\Data\\PDI\\";
+    private String resultsPath = dir + "results";
+    private String name = "Exp035_C5_a_dcxcy3_flagcy2_bIIItubcy5_dapi_20X.czi";
+    String id = dir + name;
 
+    public void run(String arg) {
+        //OpenDialog od = new OpenDialog("Open Image File...", arg);
+        //String  = od.getDirectory();
+        //String  = od.getFileName()
+
+        //Open czi image
         try {
-            ImagePlus[] imps = BF.openImagePlus(id);
+            ImporterOptions options = new ImporterOptions();
+            options.setId(id);
+            options.setAutoscale(true);
+            options.setColorMode(ImporterOptions.COLOR_MODE_GRAYSCALE);
+            options.setSplitChannels(true);
+            options.isViewHyperstack();
+            options.setStackOrder("XYCZT");
+            ImagePlus[] imps = BF.openImagePlus(options);
             for (ImagePlus imp : imps) imp.show();
         }
         catch (FormatException exc) {
@@ -57,7 +72,6 @@ public class Abridor implements PlugIn {
             IJ.error("Sorry, an error occurred: " + exc.getMessage());
         }
     }
-
 
     public static void main(String[] args) {
         // set the plugins.dir property to make the plugin appear in the Plugins menu
