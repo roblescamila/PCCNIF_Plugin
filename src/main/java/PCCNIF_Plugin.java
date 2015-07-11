@@ -49,9 +49,7 @@ public class PCCNIF_Plugin implements PlugIn {
     String id = dir + name;
 
     public void run(String arg) {
-
-
-        // Open czi image
+        // Open czi image with Bio-Formats
         try {
             ImporterOptions options = new ImporterOptions();
             options.setId(id);
@@ -117,10 +115,8 @@ public class PCCNIF_Plugin implements PlugIn {
 
     /*
     * Channel is the red channel that contains the cells' nuclei
-    *
     * @return mask a binary mask representing the nuclei morphology for all cells
     */
-
     private ImagePlus generateNucleiMask(ImagePlus redChannel) {
 
         // Pre-processing //
