@@ -170,21 +170,28 @@ public class PCCNIF_Plugin implements PlugIn {
         IJ.setAutoThreshold(imp, "Default dark");
         Prefs.blackBackground = true;
         IJ.run(imp, "Convert to Mask", "");
+        IJ.run("Set Measurements...", "area center shape decimal=3");
         IJ.run(imp, "Analyze Particles...", "size=10-Infinity circularity=0.40-1.00 show=Outlines display clear record in_situ");
         verdes = (ResultsTable) ResultsTable.getResultsTable().clone();
         // Return imp modified
         double[] nucleosX = nucleos.getColumnAsDoubles(ResultsTable.X_CENTER_OF_MASS);
+        System.out.println("nucleosX: "+nucleosX.length);
         double[] nucleosY = nucleos.getColumnAsDoubles(ResultsTable.Y_CENTER_OF_MASS);
+        System.out.println("nucleosY: "+nucleosY.length);
         double[] areas = nucleos.getColumnAsDoubles(ResultsTable.AREA);
+        System.out.println("areasX: "+areas.length);
         double[] CIs = nucleos.getColumnAsDoubles(ResultsTable.ROUNDNESS);
+        System.out.println("cis: "+CIs.length);
         double[] verdesX = verdes.getColumnAsDoubles(ResultsTable.X_CENTER_OF_MASS);
+        System.out.println("verdesX: "+verdesX.length);
         double[] verdesY = verdes.getColumnAsDoubles(ResultsTable.Y_CENTER_OF_MASS);
-        System.out.println(verdesX);
+        System.out.println("verdesY: "+verdesY.length);
         Vector<Vector<Double>> result = new Vector<Vector<Double>>();
         for (int i=0; i<verdesX.length; i++){
             System.out.println(i);
             boolean found = false;
-            for(int j=0; j<nucleosX.length; j++){
+            int j=0;
+            while(j<nucleosX.length && !found){
                 if(Math.abs(nucleosX[j]-verdesX[i])<1500 && Math.abs(nucleosY[j]-verdesY[i])<1500){
                     double radio = areas[j]/Math.PI;
                     double dist = Math.pow(nucleosX[j]-verdesX[i], 2) + Math.pow(nucleosY[j]-verdesY[i], 2);
@@ -196,9 +203,8 @@ public class PCCNIF_Plugin implements PlugIn {
                         result.add(v);
                         found = true;
                     }
-
                 }
-                if(found) break;
+                j++;
             }
         }
         System.out.println(result);
