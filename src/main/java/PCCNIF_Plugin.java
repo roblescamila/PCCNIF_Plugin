@@ -26,6 +26,7 @@
  */
 
 import ij.*;
+import ij.gui.Roi;
 import ij.io.OpenDialog;
 import ij.measure.ResultsTable;
 import ij.plugin.ImageCalculator;
@@ -47,6 +48,7 @@ public class PCCNIF_Plugin implements PlugIn {
 
     // Paths and file names
     private String dir = "/Users/joaquinbengochea/Facultad/PDI/cziImages/";
+    String resultPath = "/Users/joaquinbengochea/Facultad/PDI/cziImages/results/result.xml";
     private String resultsPath = dir + "results";
     private String name = "Exp070_C6_5_DCX-Tritc_HA-A488_MAP2-Cy5_dapi_20X.czi";
     String id = dir + name;
@@ -116,6 +118,9 @@ public class PCCNIF_Plugin implements PlugIn {
         // Apply the nuclei mask to the green channel
         ImagePlus greenChImg = WindowManager.getImage(name + " - C=1");
         ImagePlus outlines = countGreenMatches(greenChImg);
+        IJ.run("Cell Counter");
+
+
 
         // Close all unnecessary windows
         nucleiMask.changes= false;
@@ -211,7 +216,7 @@ public class PCCNIF_Plugin implements PlugIn {
         double[] verdesX = verdes.getColumnAsDoubles(ResultsTable.X_CENTER_OF_MASS);
         System.out.println("verdesX: "+verdesX.length);
         double[] verdesY = verdes.getColumnAsDoubles(ResultsTable.Y_CENTER_OF_MASS);
-        Vector<Vector<Double>> result = new Vector<Vector<Double>>();
+        Vector<Vector<Integer>> result = new Vector<Vector<Integer>>();
         for (int i=0; i<verdesX.length; i++){
             boolean found = false;
             int j=0;
@@ -221,12 +226,9 @@ public class PCCNIF_Plugin implements PlugIn {
                     double dist = Math.pow(nucleosX[j]-verdesX[i], 2) + Math.pow(nucleosY[j]-verdesY[i], 2);
 
                     if(dist<= radio+ 2*radio*CIs[j]+CIs[j]*CIs[j]){
-                        Vector<Double> v = new Vector<Double>();
-                        imp.setRoi((int) nucleosX[j], (int) nucleosY[j], (int) nucleosX[j]+10, (int)nucleosY[j]+10);
-                        //imp.getImage().getGraphics().setColor(new java.awt.Color(0xffffff);
-                        //imp.getImage().getGraphics().drawRect((int) nucleosX[j], (int) nucleosY[j], (int) nucleosX[j]+10, (int)nucleosY[j]+10);
-                        v.add(nucleosX[j]);
-                        v.add(nucleosY[j]);
+                        Vector<Integer> v = new Vector<Integer>();
+                        v.add((int)nucleosX[j]);
+                        v.add((int)nucleosY[j]);
                         result.add(v);
                         found = true;
                     }
@@ -234,13 +236,27 @@ public class PCCNIF_Plugin implements PlugIn {
                 j++;
             }
         }
+        String resultXML = createXMLFromPoints(result);
+        IJ.saveString(resultXML, resultPath);
         System.out.println(result);
         System.out.println(result.size());
-        imp.updateImage();
         imp.show();
         return imp;
 
 
+    }
+
+    String createXMLFromPoints(Vector<Vector<Integer>> v){
+        String s = "";
+        s+="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <CellCounter_Marker_File> <Image_Properties> <Image_Filename>"+name+"</Image_Filename> </Image_Properties> ";
+        s+="<Marker_Data> <Current_Type>1</Current_Type> <Marker_Type> <Type>1</Type> ";
+        for(Vector point : v) {
+            s+="<Marker > <MarkerX > "+point.elementAt(0)+" </MarkerX > <MarkerY > "+point.elementAt(1)+" </MarkerY > <MarkerZ > 1 </MarkerZ >  </Marker > ";
+        }
+        s+="</Marker_Type>";
+        for(int i=2; i<=8; i++) s+=" <Marker_Type> <Type>"+i+"</Type> </Marker_Type> ";
+        s+="</Marker_Data> </CellCounter_Marker_File>";
+        return s;
     }
 
     public static void main(String[] args) {
