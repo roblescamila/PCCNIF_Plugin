@@ -120,15 +120,15 @@ public class PCCNIF_Plugin implements PlugIn {
         // Close all unnecessary windows
         nucleiMask.changes= false;
         nucleiMask.show();
-        IJ.run("Close");
+        //IJ.run("Close");
 
         greenChImg.changes= false;
         greenChImg.show();
-        IJ.run("Close");
+        //IJ.run("Close");
 
 
         // Get positive matches
-        outlines.show();
+        //outlines.show();
 
         // Save image calculation //
 
@@ -137,8 +137,8 @@ public class PCCNIF_Plugin implements PlugIn {
         newDir.mkdirs();
 
         // Save image
-        IJ.run(outlines, "8-bit", "");
-        IJ.saveAs(outlines, "PNG", resultsPath + "\\" + name + " - result.bmp");
+        //IJ.run(outlines, "8-bit", "");
+       // IJ.saveAs(outlines, "PNG", resultsPath + "\\" + name + " - result.bmp");
 
         // Save count results
         IJ.saveAs("Results", resultsPath + "\\Results.xls");
@@ -222,6 +222,9 @@ public class PCCNIF_Plugin implements PlugIn {
 
                     if(dist<= radio+ 2*radio*CIs[j]+CIs[j]*CIs[j]){
                         Vector<Double> v = new Vector<Double>();
+                        imp.setRoi((int) nucleosX[j], (int) nucleosY[j], (int) nucleosX[j]+10, (int)nucleosY[j]+10);
+                        //imp.getImage().getGraphics().setColor(new java.awt.Color(0xffffff);
+                        //imp.getImage().getGraphics().drawRect((int) nucleosX[j], (int) nucleosY[j], (int) nucleosX[j]+10, (int)nucleosY[j]+10);
                         v.add(nucleosX[j]);
                         v.add(nucleosY[j]);
                         result.add(v);
@@ -233,7 +236,10 @@ public class PCCNIF_Plugin implements PlugIn {
         }
         System.out.println(result);
         System.out.println(result.size());
+        imp.updateImage();
+        imp.show();
         return imp;
+
 
     }
 
