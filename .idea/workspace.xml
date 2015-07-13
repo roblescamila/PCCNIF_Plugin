@@ -2,11 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c85aac9-ebfe-4583-b346-c06d64decbab" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/PCCNIF_Plugin.java" afterPath="$PROJECT_DIR$/src/main/java/PCCNIF_Plugin.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Process_Pixels.iml" afterPath="$PROJECT_DIR$/Process_Pixels.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Simple_Read.iws" />
@@ -36,12 +31,12 @@
       <file leaf-file-name="PCCNIF_Plugin.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/PCCNIF_Plugin.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.36708862">
-              <caret line="174" column="30" selection-start-line="174" selection-start-column="30" selection-end-line="174" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.14556962">
+              <caret line="173" column="78" selection-start-line="173" selection-start-column="78" selection-end-line="173" selection-end-column="78" />
               <folding>
                 <element signature="docComment;class#PCCNIF_Plugin#0" expanded="false" />
-                <element signature="e#6744#6760#0" expanded="true" />
-                <element signature="e#7314#7322#0" expanded="true" />
+                <element signature="e#7106#7122#0" expanded="true" />
+                <element signature="e#7695#7703#0" expanded="true" />
                 <element signature="method#main#0;class#PCCNIF_Plugin#0" expanded="false" />
               </folding>
             </state>
@@ -327,7 +322,7 @@
     </configuration>
     <configuration default="true" type="JarApplication" factoryName="JAR Application">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <option name="JAR_PATH" value="C:/Fiji.app/jars/ij-1.49s.jar" />
+      <option name="JAR_PATH" value="$PROJECT_DIR$/bioformats_package.jar" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <envs />
       <method />
@@ -508,8 +503,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="docComment;class#PCCNIF_Plugin#0" expanded="false" />
-            <element signature="e#6744#6760#0" expanded="true" />
-            <element signature="e#7314#7322#0" expanded="true" />
+            <element signature="e#7106#7122#0" expanded="true" />
+            <element signature="e#7695#7703#0" expanded="true" />
             <element signature="method#main#0;class#PCCNIF_Plugin#0" expanded="false" />
           </folding>
         </state>
@@ -521,8 +516,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="docComment;class#PCCNIF_Plugin#0" expanded="false" />
-            <element signature="e#6744#6760#0" expanded="true" />
-            <element signature="e#7314#7322#0" expanded="true" />
+            <element signature="e#7106#7122#0" expanded="true" />
+            <element signature="e#7695#7703#0" expanded="true" />
             <element signature="method#main#0;class#PCCNIF_Plugin#0" expanded="false" />
           </folding>
         </state>
@@ -534,8 +529,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="docComment;class#PCCNIF_Plugin#0" expanded="false" />
-            <element signature="e#6744#6760#0" expanded="true" />
-            <element signature="e#7314#7322#0" expanded="true" />
+            <element signature="e#7106#7122#0" expanded="true" />
+            <element signature="e#7695#7703#0" expanded="true" />
             <element signature="method#main#0;class#PCCNIF_Plugin#0" expanded="false" />
           </folding>
         </state>
@@ -599,12 +594,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/PCCNIF_Plugin.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.36708862">
-          <caret line="174" column="30" selection-start-line="174" selection-start-column="30" selection-end-line="174" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.14556962">
+          <caret line="173" column="78" selection-start-line="173" selection-start-column="78" selection-end-line="173" selection-end-column="78" />
           <folding>
             <element signature="docComment;class#PCCNIF_Plugin#0" expanded="false" />
-            <element signature="e#6744#6760#0" expanded="true" />
-            <element signature="e#7314#7322#0" expanded="true" />
+            <element signature="e#7106#7122#0" expanded="true" />
+            <element signature="e#7695#7703#0" expanded="true" />
             <element signature="method#main#0;class#PCCNIF_Plugin#0" expanded="false" />
           </folding>
         </state>
