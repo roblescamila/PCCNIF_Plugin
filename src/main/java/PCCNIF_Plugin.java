@@ -30,6 +30,7 @@ import ij.io.OpenDialog;
 import ij.measure.ResultsTable;
 import ij.plugin.ImageCalculator;
 import ij.plugin.PlugIn;
+import ij.gui.GenericDialog;
 import ij.process.ImageProcessor;
 import loci.common.Region;
 import loci.formats.FormatException;
@@ -47,8 +48,17 @@ public class PCCNIF_Plugin implements PlugIn {
     // Paths and file names
     private String dir = "/Users/joaquinbengochea/Facultad/PDI/cziImages/";
     private String resultsPath = dir + "results";
-    private String name = "Exp035_C5_a_dcxcy3_flagcy2_bIIItubcy5_dapi_20X.czi";
+    private String name = "Exp070_C6_5_DCX-Tritc_HA-A488_MAP2-Cy5_dapi_20X.czi";
     String id = dir + name;
+    int thresholdMin = 200;
+    int thresholdMax = 255;
+    double circularityMin = 0.40;
+    int nucleicSizeMin = 10;
+    int nucleicSizeMax = 999;
+    int proteinSizeMin = 10;
+    int proteinSizeMax = 999;
+
+
 
     ResultsTable nucleos;
     ResultsTable verdes;
@@ -58,6 +68,25 @@ public class PCCNIF_Plugin implements PlugIn {
     public void run(String arg) {
         // Open czi image with Bio-Formats
         try {
+
+            GenericDialog gd = new GenericDialog("Set parameters");
+            gd.addNumericField("Protein threshold min", thresholdMin, 3);
+            gd.addNumericField("Protein threshold max", thresholdMax, 3);
+            gd.addNumericField("Nucleic circularity min", circularityMin, 3);
+            gd.addNumericField("Nucleic size min", nucleicSizeMin, 3);
+            gd.addNumericField("Nucleic size max", nucleicSizeMax, 3);
+            gd.addNumericField("Protein size min", proteinSizeMin, 3);
+            gd.addNumericField("Protein size max", proteinSizeMax, 3);
+            gd.showDialog();
+            if (gd.wasCanceled()) return;
+            thresholdMin = (int)gd.getNextNumber();
+            thresholdMax = (int)gd.getNextNumber();
+            circularityMin = (double)gd.getNextNumber();
+            nucleicSizeMin = (int)gd.getNextNumber();
+            nucleicSizeMax = (int)gd.getNextNumber();
+            proteinSizeMin = (int)gd.getNextNumber();
+            proteinSizeMax = (int)gd.getNextNumber();
+
             ImporterOptions options = new ImporterOptions();
             options.setId(id);
             options.setAutoscale(true);
@@ -86,7 +115,7 @@ public class PCCNIF_Plugin implements PlugIn {
 
         // Apply the nuclei mask to the green channel
         ImagePlus greenChImg = WindowManager.getImage(name + " - C=1");
-        ImagePlus minImg = applyMaskToGreenChannel(nucleiMask, greenChImg);
+        ImagePlus outlines = countGreenMatches(greenChImg);
 
         // Close all unnecessary windows
         nucleiMask.changes= false;
@@ -97,12 +126,9 @@ public class PCCNIF_Plugin implements PlugIn {
         greenChImg.show();
         IJ.run("Close");
 
-        // Proceed with processing n min image
-        minImg.show();
 
         // Get positive matches
-        ImagePlus outlines = countGreenMatches(minImg);
-
+        outlines.show();
 
         // Save image calculation //
 
@@ -111,6 +137,7 @@ public class PCCNIF_Plugin implements PlugIn {
         newDir.mkdirs();
 
         // Save image
+        IJ.run(outlines, "8-bit", "");
         IJ.saveAs(outlines, "PNG", resultsPath + "\\" + name + " - result.bmp");
 
         // Save count results
@@ -146,7 +173,7 @@ public class PCCNIF_Plugin implements PlugIn {
         // Apply watershed filter to separate nuclei clusters
         IJ.run(redChannel, "Watershed", "");
 
-        IJ.run(redChannel, "Analyze Particles...", "size=10-Infinity circularity=0.40-1.00 show=Outlines display clear record in_situ");
+        IJ.run(redChannel, "Analyze Particles...", "size="+nucleicSizeMin+"-"+nucleicSizeMax+" circularity="+circularityMin+"-1.00 show=Outlines display clear record in_situ");
         nucleos = (ResultsTable) ResultsTable.getResultsTable().clone();
         return redChannel;
     }
@@ -166,29 +193,26 @@ public class PCCNIF_Plugin implements PlugIn {
     */
     public ImagePlus countGreenMatches(ImagePlus imp) {
 
+        IJ.run(imp, "8-bit", "");
         IJ.run(imp, "Enhance Contrast...", "saturated=0.9 equalize");
-        IJ.setAutoThreshold(imp, "Default dark");
+        IJ.run(imp, "Subtract Background...", "rolling=50");
+        IJ.setThreshold(imp, thresholdMin, thresholdMax);
         Prefs.blackBackground = true;
         IJ.run(imp, "Convert to Mask", "");
         IJ.run("Set Measurements...", "area center shape decimal=3");
-        IJ.run(imp, "Analyze Particles...", "size=10-Infinity circularity=0.40-1.00 show=Outlines display clear record in_situ");
+        IJ.run(imp, "Analyze Particles...", "size="+proteinSizeMin+"-"+proteinSizeMax+" circularity=0.00-1.00 show=Outlines display clear record in_situ");
         verdes = (ResultsTable) ResultsTable.getResultsTable().clone();
         // Return imp modified
         double[] nucleosX = nucleos.getColumnAsDoubles(ResultsTable.X_CENTER_OF_MASS);
         System.out.println("nucleosX: "+nucleosX.length);
         double[] nucleosY = nucleos.getColumnAsDoubles(ResultsTable.Y_CENTER_OF_MASS);
-        System.out.println("nucleosY: "+nucleosY.length);
         double[] areas = nucleos.getColumnAsDoubles(ResultsTable.AREA);
-        System.out.println("areasX: "+areas.length);
         double[] CIs = nucleos.getColumnAsDoubles(ResultsTable.ROUNDNESS);
-        System.out.println("cis: "+CIs.length);
         double[] verdesX = verdes.getColumnAsDoubles(ResultsTable.X_CENTER_OF_MASS);
         System.out.println("verdesX: "+verdesX.length);
         double[] verdesY = verdes.getColumnAsDoubles(ResultsTable.Y_CENTER_OF_MASS);
-        System.out.println("verdesY: "+verdesY.length);
         Vector<Vector<Double>> result = new Vector<Vector<Double>>();
         for (int i=0; i<verdesX.length; i++){
-            System.out.println(i);
             boolean found = false;
             int j=0;
             while(j<nucleosX.length && !found){
@@ -198,8 +222,8 @@ public class PCCNIF_Plugin implements PlugIn {
 
                     if(dist<= radio+ 2*radio*CIs[j]+CIs[j]*CIs[j]){
                         Vector<Double> v = new Vector<Double>();
-                        v.add(verdesX[i]);
-                        v.add(verdesY[i]);
+                        v.add(nucleosX[j]);
+                        v.add(nucleosY[j]);
                         result.add(v);
                         found = true;
                     }
@@ -208,6 +232,7 @@ public class PCCNIF_Plugin implements PlugIn {
             }
         }
         System.out.println(result);
+        System.out.println(result.size());
         return imp;
 
     }
