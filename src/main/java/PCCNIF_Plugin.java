@@ -112,6 +112,7 @@ public class PCCNIF_Plugin implements PlugIn {
         IJ.run("Close");
 
         // Generate a nuclei mask from the red channel
+
         ImagePlus redChannel = WindowManager.getImage(name + " - C=0");
         ImagePlus nucleiMask = generateNucleiMask(redChannel);
 
@@ -159,6 +160,7 @@ public class PCCNIF_Plugin implements PlugIn {
     private ImagePlus generateNucleiMask(ImagePlus redChannel) {
 
         // Pre-processing //
+        IJ.run("View 100%");
         IJ.run(redChannel, "Enhance Contrast...", "saturated=0.9 equalize");
 
         // Processing //
@@ -198,13 +200,14 @@ public class PCCNIF_Plugin implements PlugIn {
     */
     public ImagePlus countGreenMatches(ImagePlus imp) {
 
+        IJ.run( "View 100%");
         IJ.run(imp, "8-bit", "");
         IJ.run(imp, "Enhance Contrast...", "saturated=0.9 equalize");
         IJ.run(imp, "Subtract Background...", "rolling=50");
         IJ.setThreshold(imp, thresholdMin, thresholdMax);
         Prefs.blackBackground = true;
         IJ.run(imp, "Convert to Mask", "");
-        IJ.run("Set Measurements...", "area center shape decimal=3");
+        IJ.run("Set Measurements...", "area centroid center  shape decimal=3");
         IJ.run(imp, "Analyze Particles...", "size="+proteinSizeMin+"-"+proteinSizeMax+" circularity=0.00-1.00 show=Outlines display clear record in_situ");
         verdes = (ResultsTable) ResultsTable.getResultsTable().clone();
         // Return imp modified
@@ -227,8 +230,8 @@ public class PCCNIF_Plugin implements PlugIn {
 
                     if(dist<= radio+ 2*radio*CIs[j]+CIs[j]*CIs[j]){
                         Vector<Integer> v = new Vector<Integer>();
-                        v.add((int)nucleosX[j]);
-                        v.add((int)nucleosY[j]);
+                        v.add((int) (Math.min(2*verdesX[i], 1387)));
+                        v.add((int) (Math.min(2*verdesY[i], 1039)));
                         result.add(v);
                         found = true;
                     }
@@ -240,6 +243,7 @@ public class PCCNIF_Plugin implements PlugIn {
         IJ.saveString(resultXML, resultPath);
         System.out.println(result);
         System.out.println(result.size());
+        System.out.println("version 3");
         imp.show();
         return imp;
 
