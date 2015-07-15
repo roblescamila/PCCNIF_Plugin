@@ -40,7 +40,6 @@ import loci.plugins.in.ImporterOptions;
 import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
-
 /**
  * A very simple example of using Bio-Formats in an ImageJ plugin.
  */
@@ -119,7 +118,6 @@ public class PCCNIF_Plugin implements PlugIn {
         // Apply the nuclei mask to the green channel
         ImagePlus greenChImg = WindowManager.getImage(name + " - C=1");
         ImagePlus outlines = countGreenMatches(greenChImg);
-        IJ.run("Cell Counter");
 
 
 
@@ -149,8 +147,8 @@ public class PCCNIF_Plugin implements PlugIn {
         // Save count results
         IJ.saveAs("Results", resultsPath + "\\Results.xls");
 
-        IJ.run("Close", "");
-        outlines.close();
+        //IJ.run("Close", "");
+        //outlines.close();
     }
 
     /*
@@ -200,7 +198,6 @@ public class PCCNIF_Plugin implements PlugIn {
     */
     public ImagePlus countGreenMatches(ImagePlus imp) {
 
-        IJ.run( "View 100%");
         IJ.run(imp, "8-bit", "");
         IJ.run(imp, "Enhance Contrast...", "saturated=0.9 equalize");
         IJ.run(imp, "Subtract Background...", "rolling=50");
@@ -238,12 +235,19 @@ public class PCCNIF_Plugin implements PlugIn {
                 }
                 j++;
             }
+            if(!found) {
+                ResultsTable.getResultsTable().deleteRow(i);
+                ResultsTable.getResultsTable().updateResults();
+            }
         }
         String resultXML = createXMLFromPoints(result);
         IJ.saveString(resultXML, resultPath);
         System.out.println(result);
         System.out.println(result.size());
-        System.out.println("version 3");
+        System.out.println("version 6");
+        ResultsTable.getResultsTable().show("Results");
+        imp.updateAndDraw();
+        imp.updateImage();
         imp.show();
         return imp;
 

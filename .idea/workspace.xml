@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/src/main/java/PCCNIF_Plugin.java" line="198" mnemonic="4" />
+    <bookmark url="file://$PROJECT_DIR$/src/main/java/PCCNIF_Plugin.java" line="203" mnemonic="4" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4c85aac9-ebfe-4583-b346-c06d64decbab" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Cell_Counter_2_0_0.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/PCCNIF_Plugin.java" afterPath="$PROJECT_DIR$/src/main/java/PCCNIF_Plugin.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Process_Pixels.iml" afterPath="$PROJECT_DIR$/Process_Pixels.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Simple_Read.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,13 +37,13 @@
       <file leaf-file-name="PCCNIF_Plugin.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/PCCNIF_Plugin.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.62998104">
-              <caret line="206" column="57" selection-start-line="206" selection-start-column="57" selection-end-line="206" selection-end-column="57" />
+            <state vertical-scroll-proportion="0.17457305">
+              <caret line="246" column="37" selection-start-line="246" selection-start-column="37" selection-end-line="246" selection-end-column="37" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="docComment;class#PCCNIF_Plugin#0" expanded="false" />
-                <element signature="e#8249#8265#0" expanded="true" />
-                <element signature="e#8803#8811#0" expanded="true" />
+                <element signature="e#8417#8434#0" expanded="true" />
+                <element signature="e#8973#8982#0" expanded="true" />
                 <element signature="method#main#0;class#PCCNIF_Plugin#0" expanded="false" />
               </folding>
             </state>
@@ -119,6 +122,10 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="Process_Pixels" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="External Libraries" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -215,6 +222,13 @@
       <option name="ENV_VARIABLES" />
       <option name="PASS_PARENT_ENVS" value="true" />
       <module name="Process_Pixels" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="Cell_Counter-2.0.0.jar" type="JarApplication" factoryName="JAR Application" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="JAR_PATH" value="$PROJECT_DIR$/Cell_Counter-2.0.0.jar" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <envs />
       <method />
     </configuration>
@@ -326,7 +340,7 @@
     </configuration>
     <configuration default="true" type="JarApplication" factoryName="JAR Application">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <option name="JAR_PATH" value="$PROJECT_DIR$/bioformats_package.jar" />
+      <option name="JAR_PATH" value="$PROJECT_DIR$/Cell_Counter-2.0.0.jar" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <envs />
       <method />
@@ -411,15 +425,17 @@
       </MavenSettings>
       <method />
     </configuration>
-    <list size="3">
+    <list size="4">
       <item index="0" class="java.lang.String" itemvalue="Maven.Simple_Read" />
       <item index="1" class="java.lang.String" itemvalue="Application.Abridor" />
       <item index="2" class="java.lang.String" itemvalue="Application.PCCNIF_Plugin" />
+      <item index="3" class="java.lang.String" itemvalue="JAR Application.Cell_Counter-2.0.0.jar" />
     </list>
     <recent_temporary>
-      <list size="2">
+      <list size="3">
         <item index="0" class="java.lang.String" itemvalue="Application.PCCNIF_Plugin" />
-        <item index="1" class="java.lang.String" itemvalue="Application.Abridor" />
+        <item index="1" class="java.lang.String" itemvalue="JAR Application.Cell_Counter-2.0.0.jar" />
+        <item index="2" class="java.lang.String" itemvalue="Application.Abridor" />
       </list>
     </recent_temporary>
   </component>
@@ -450,7 +466,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="797" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -462,7 +478,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32857144" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32692307" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -508,8 +524,8 @@
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="docComment;class#PCCNIF_Plugin#0" expanded="false" />
-            <element signature="e#8249#8265#0" expanded="true" />
-            <element signature="e#8803#8811#0" expanded="true" />
+            <element signature="e#8417#8434#0" expanded="true" />
+            <element signature="e#8973#8982#0" expanded="true" />
             <element signature="method#main#0;class#PCCNIF_Plugin#0" expanded="false" />
           </folding>
         </state>
@@ -522,8 +538,8 @@
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="docComment;class#PCCNIF_Plugin#0" expanded="false" />
-            <element signature="e#8249#8265#0" expanded="true" />
-            <element signature="e#8803#8811#0" expanded="true" />
+            <element signature="e#8417#8434#0" expanded="true" />
+            <element signature="e#8973#8982#0" expanded="true" />
             <element signature="method#main#0;class#PCCNIF_Plugin#0" expanded="false" />
           </folding>
         </state>
@@ -536,8 +552,8 @@
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="docComment;class#PCCNIF_Plugin#0" expanded="false" />
-            <element signature="e#8249#8265#0" expanded="true" />
-            <element signature="e#8803#8811#0" expanded="true" />
+            <element signature="e#8417#8434#0" expanded="true" />
+            <element signature="e#8973#8982#0" expanded="true" />
             <element signature="method#main#0;class#PCCNIF_Plugin#0" expanded="false" />
           </folding>
         </state>
@@ -599,15 +615,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/target/classes/plugins.config">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/Cell_Counter-2.0.0.jar!/CellCounter.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-19.76">
+          <caret line="29" column="29" selection-start-line="29" selection-start-column="29" selection-end-line="29" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#29459#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.79696393">
+          <caret line="28" column="24" selection-start-line="28" selection-start-column="24" selection-end-line="28" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/PCCNIF_Plugin.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.62998104">
-          <caret line="206" column="57" selection-start-line="206" selection-start-column="57" selection-end-line="206" selection-end-column="57" />
+        <state vertical-scroll-proportion="0.17457305">
+          <caret line="246" column="37" selection-start-line="246" selection-start-column="37" selection-end-line="246" selection-end-column="37" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="docComment;class#PCCNIF_Plugin#0" expanded="false" />
-            <element signature="e#8249#8265#0" expanded="true" />
-            <element signature="e#8803#8811#0" expanded="true" />
+            <element signature="e#8417#8434#0" expanded="true" />
+            <element signature="e#8973#8982#0" expanded="true" />
             <element signature="method#main#0;class#PCCNIF_Plugin#0" expanded="false" />
           </folding>
         </state>
