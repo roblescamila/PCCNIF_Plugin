@@ -46,11 +46,9 @@ import java.util.Vector;
 public class PCCNIF_Plugin implements PlugIn {
 
     // Paths and file names
-    private String dir = "/Users/joaquinbengochea/Facultad/PDI/cziImages/";
-    String resultPath = "/Users/joaquinbengochea/Facultad/PDI/cziImages/results/result.xml";
-    private String resultsPath = dir + "results";
-    private String name = "Exp070_C6_5_DCX-Tritc_HA-A488_MAP2-Cy5_dapi_20X.czi";
-    String id = dir + name;
+    String resultPath = "./result.xml";
+    String resultsPath = "./results";
+    String name;
     int thresholdMin = 200;
     int thresholdMax = 255;
     double circularityMin = 0.40;
@@ -59,8 +57,6 @@ public class PCCNIF_Plugin implements PlugIn {
     int proteinSizeMin = 10;
     int proteinSizeMax = 999;
 
-
-
     ResultsTable nucleos;
     ResultsTable verdes;
 
@@ -68,47 +64,35 @@ public class PCCNIF_Plugin implements PlugIn {
 
     public void run(String arg) {
         // Open czi image with Bio-Formats
-        try {
-
-            GenericDialog gd = new GenericDialog("Set parameters");
-            gd.addNumericField("Protein threshold min", thresholdMin, 3);
-            gd.addNumericField("Protein threshold max", thresholdMax, 3);
-            gd.addNumericField("Nucleic circularity min", circularityMin, 3);
-            gd.addNumericField("Nucleic size min", nucleicSizeMin, 3);
-            gd.addNumericField("Nucleic size max", nucleicSizeMax, 3);
-            gd.addNumericField("Protein size min", proteinSizeMin, 3);
-            gd.addNumericField("Protein size max", proteinSizeMax, 3);
-            gd.showDialog();
-            if (gd.wasCanceled()) return;
-            thresholdMin = (int)gd.getNextNumber();
-            thresholdMax = (int)gd.getNextNumber();
-            circularityMin = (double)gd.getNextNumber();
-            nucleicSizeMin = (int)gd.getNextNumber();
-            nucleicSizeMax = (int)gd.getNextNumber();
-            proteinSizeMin = (int)gd.getNextNumber();
-            proteinSizeMax = (int)gd.getNextNumber();
-
-            ImporterOptions options = new ImporterOptions();
-            options.setId(id);
-            options.setAutoscale(true);
-            options.setStitchTiles(true);
-            options.setColorMode(ImporterOptions.COLOR_MODE_DEFAULT);
-            options.setSplitChannels(true);
-            options.isViewHyperstack();
-            options.setStackOrder("XYCZT");
-            ImagePlus[] imps = BF.openImagePlus(options);
-            for (ImagePlus imp : imps) imp.show();
-        } catch (FormatException exc) {
-            IJ.error("Sorry, an error occurred: " + exc.getMessage());
-        } catch (IOException exc) {
-            IJ.error("Sorry, an error occurred: " + exc.getMessage());
-        }
+        GenericDialog gd = new GenericDialog("Set parameters");
+        gd.addNumericField("Protein threshold min", thresholdMin, 3);
+        gd.addNumericField("Protein threshold max", thresholdMax, 3);
+        gd.addNumericField("Nucleic circularity min", circularityMin, 3);
+        gd.addNumericField("Nucleic size min", nucleicSizeMin, 3);
+        gd.addNumericField("Nucleic size max", nucleicSizeMax, 3);
+        gd.addNumericField("Protein size min", proteinSizeMin, 3);
+        gd.addNumericField("Protein size max", proteinSizeMax, 3);
+        gd.showDialog();
+        if (gd.wasCanceled()) return;
+        thresholdMin = (int)gd.getNextNumber();
+        thresholdMax = (int)gd.getNextNumber();
+        circularityMin = (double)gd.getNextNumber();
+        nucleicSizeMin = (int)gd.getNextNumber();
+        nucleicSizeMax = (int)gd.getNextNumber();
+        proteinSizeMin = (int)gd.getNextNumber();
+        proteinSizeMax = (int)gd.getNextNumber();
+        name = WindowManager.getCurrentImage().getTitle();
+        name = name.substring(0,name.length()-6);
 
         // Close channels 2 and 3 since we do not use them
         IJ.selectWindow(name + " - C=2");
         IJ.run("Close");
         IJ.selectWindow(name + " - C=3");
         IJ.run("Close");
+        /*IJ.selectWindow(name + " - C=0");
+        IJ.run("View 100%");
+        IJ.selectWindow(name + " - C=1");
+        IJ.run("View 100%");*/
 
         // Generate a nuclei mask from the red channel
 
@@ -158,7 +142,7 @@ public class PCCNIF_Plugin implements PlugIn {
     private ImagePlus generateNucleiMask(ImagePlus redChannel) {
 
         // Pre-processing //
-        IJ.run("View 100%");
+
         IJ.run(redChannel, "Enhance Contrast...", "saturated=0.9 equalize");
 
         // Processing //
@@ -217,6 +201,7 @@ public class PCCNIF_Plugin implements PlugIn {
         System.out.println("verdesX: "+verdesX.length);
         double[] verdesY = verdes.getColumnAsDoubles(ResultsTable.Y_CENTER_OF_MASS);
         Vector<Vector<Integer>> result = new Vector<Vector<Integer>>();
+        System.out.println(imp.getWidth()+" ,  "+imp.getHeight());
         for (int i=0; i<verdesX.length; i++){
             boolean found = false;
             int j=0;
@@ -227,8 +212,8 @@ public class PCCNIF_Plugin implements PlugIn {
 
                     if(dist<= radio+ 2*radio*CIs[j]+CIs[j]*CIs[j]){
                         Vector<Integer> v = new Vector<Integer>();
-                        v.add((int) (Math.min(2*verdesX[i], 1387)));
-                        v.add((int) (Math.min(2*verdesY[i], 1039)));
+                        v.add((int) (Math.min(2*nucleosX[j], imp.getWidth())));
+                        v.add((int) (Math.min(2*nucleosY[j], imp.getHeight())));
                         result.add(v);
                         found = true;
                     }
@@ -244,10 +229,8 @@ public class PCCNIF_Plugin implements PlugIn {
         IJ.saveString(resultXML, resultPath);
         System.out.println(result);
         System.out.println(result.size());
-        System.out.println("version 6");
+        System.out.println("version 8");
         ResultsTable.getResultsTable().show("Results");
-        imp.updateAndDraw();
-        imp.updateImage();
         imp.show();
         return imp;
 
@@ -263,7 +246,7 @@ public class PCCNIF_Plugin implements PlugIn {
         }
         s+="</Marker_Type>";
         for(int i=2; i<=8; i++) s+=" <Marker_Type> <Type>"+i+"</Type> </Marker_Type> ";
-        s+="</Marker_Data> </CellCounter_Marker_File>";
+        s+="</Marker_Data> </CellCounter_Marker_File> <!-- asdf -->";
         return s;
     }
 
@@ -279,6 +262,5 @@ public class PCCNIF_Plugin implements PlugIn {
         new ImageJ();
 
         // run the plugin
-        IJ.runPlugIn(clazz.getName(), "");
     }
 }
