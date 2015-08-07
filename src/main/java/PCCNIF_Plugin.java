@@ -26,19 +26,13 @@
  */
 
 import ij.*;
-import ij.gui.Roi;
-import ij.io.OpenDialog;
+import ij.gui.GenericDialog;
 import ij.measure.ResultsTable;
 import ij.plugin.ImageCalculator;
 import ij.plugin.PlugIn;
-import ij.gui.GenericDialog;
 import ij.process.ImageProcessor;
-import loci.common.Region;
-import loci.formats.FormatException;
-import loci.plugins.BF;
-import loci.plugins.in.ImporterOptions;
+
 import java.io.File;
-import java.io.IOException;
 import java.util.Vector;
 /**
  * A very simple example of using Bio-Formats in an ImageJ plugin.
@@ -49,75 +43,110 @@ public class PCCNIF_Plugin implements PlugIn {
     String resultPath = "./result.xml";
     String resultsPath = "./results";
     String name;
-    int thresholdMin = 200;
-    int thresholdMax = 255;
+    double enhancecontrastsaturated = 0.4;
+    int substractbackgroundrolling = 50;
+    int nucleithresholdMin = 50;
+    int nucleithresholdMax = 255;
     double circularityMin = 0.40;
-    int nucleicSizeMin = 10;
-    int nucleicSizeMax = 999;
-    int proteinSizeMin = 10;
-    int proteinSizeMax = 999;
+    int nucleicSizeMin = 40;
+    int nucleicSizeMax = 4000;
+
+    int proteinthresholdMin = 100;
+    int proteinthresholdMax = 255;
+    int proteinSizeMin = 40;
+    int proteinSizeMax = 4000;
+    int nucleichannel = 1;
+    int proteinchannel = 4;
+    int proteinthreshold = 100;
+    boolean processnuclei = false;
+    boolean processprotein = false;
+    boolean proteincounting = false; // false método de rectángulo, true método de conteo
+    ImageProcessor nucleiimage;
+    ImageProcessor proteinimage;
 
     ResultsTable nucleos;
     ResultsTable verdes;
 
 
 
+
     public void run(String arg) {
         // Open czi image with Bio-Formats
         GenericDialog gd = new GenericDialog("Set parameters");
-        gd.addNumericField("Protein threshold min", thresholdMin, 3);
-        gd.addNumericField("Protein threshold max", thresholdMax, 3);
+
+        gd.addNumericField("Ehance contrast saturation", enhancecontrastsaturated, 3);
+        gd.addNumericField("Substract Background rolling", substractbackgroundrolling, 3);
+        gd.addNumericField("Nuclei threshold min", nucleithresholdMin, 3);
+        gd.addNumericField("Nuclei threshold max", nucleithresholdMax, 3);
         gd.addNumericField("Nucleic circularity min", circularityMin, 3);
         gd.addNumericField("Nucleic size min", nucleicSizeMin, 3);
         gd.addNumericField("Nucleic size max", nucleicSizeMax, 3);
+
+        gd.addNumericField("Protein threshold min", proteinthresholdMin, 3);
+        gd.addNumericField("Protein threshold max", proteinthresholdMax, 3);
         gd.addNumericField("Protein size min", proteinSizeMin, 3);
         gd.addNumericField("Protein size max", proteinSizeMax, 3);
+
+        gd.addNumericField("Nuclei channel", nucleichannel, 1);
+        gd.addNumericField("Protein channel", proteinchannel, 1);
+        gd.addCheckbox("Preprocess Nuclei", processnuclei);
+        gd.addCheckbox("Preprocess Protein", processprotein);
+        gd.addCheckbox("Protein counting",proteincounting);
+        //    gd.add
         gd.showDialog();
         if (gd.wasCanceled()) return;
-        thresholdMin = (int)gd.getNextNumber();
-        thresholdMax = (int)gd.getNextNumber();
+        enhancecontrastsaturated = (double)gd.getNextNumber();
+        substractbackgroundrolling = (int)gd.getNextNumber();
+        nucleithresholdMin = (int)gd.getNextNumber();
+        nucleithresholdMax = (int)gd.getNextNumber();
         circularityMin = (double)gd.getNextNumber();
         nucleicSizeMin = (int)gd.getNextNumber();
         nucleicSizeMax = (int)gd.getNextNumber();
+
+        proteinthresholdMin = (int)gd.getNextNumber();
+        proteinthresholdMax = (int)gd.getNextNumber();
         proteinSizeMin = (int)gd.getNextNumber();
         proteinSizeMax = (int)gd.getNextNumber();
-        name = WindowManager.getCurrentImage().getTitle();
-        name = name.substring(0,name.length()-6);
-
-        // Close channels 2 and 3 since we do not use them
-        IJ.selectWindow(name + " - C=2");
-        IJ.run("Close");
-        IJ.selectWindow(name + " - C=3");
-        IJ.run("Close");
-        /*IJ.selectWindow(name + " - C=0");
-        IJ.run("View 100%");
-        IJ.selectWindow(name + " - C=1");
-        IJ.run("View 100%");*/
+        nucleichannel = (int)gd.getNextNumber();
+        proteinchannel = (int)gd.getNextNumber();
+        processnuclei = gd.getNextBoolean();
+        processprotein = gd.getNextBoolean();
+        proteincounting = gd.getNextBoolean();
 
         // Generate a nuclei mask from the red channel
+        name = WindowManager.getCurrentImage().getTitle();
+        ImageStack is =  WindowManager.getCurrentImage().getStack();
+        nucleiimage = is.getProcessor(nucleichannel);
+        proteinimage = is.getProcessor(proteinchannel);
 
-        ImagePlus redChannel = WindowManager.getImage(name + " - C=0");
-        ImagePlus nucleiMask = generateNucleiMask(redChannel);
+        ImagePlus nucleiip = new ImagePlus();
+        nucleiip.setProcessor(nucleiimage);
+        nucleiip.show();
 
-        // Apply the nuclei mask to the green channel
-        ImagePlus greenChImg = WindowManager.getImage(name + " - C=1");
-        ImagePlus outlines = countGreenMatches(greenChImg);
+        ImagePlus proteinip = new ImagePlus();
+        proteinip.setProcessor(proteinimage);
+        proteinip.show();
+        if (processnuclei)
+        {
+            nucleiip = generateNucleiMask(nucleiip);
+        }
 
+        IJ.run("Set Measurements...", "area centroid center bounding shape decimal=3");
+        String APparameters = "size=" + nucleicSizeMin + "-" + nucleicSizeMax + " circularity=" + circularityMin + "-1.00 show=Outlines display clear record in_situ";
+        IJ.run(nucleiip, "Analyze Particles...", APparameters);
+        nucleos = (ResultsTable) ResultsTable.getResultsTable().clone();
 
-
-        // Close all unnecessary windows
-        nucleiMask.changes= false;
-        nucleiMask.show();
-        //IJ.run("Close");
-
-        greenChImg.changes= false;
-        greenChImg.show();
-        //IJ.run("Close");
-
-
-        // Get positive matches
-        //outlines.show();
-
+        if (processprotein)
+        {
+            proteinip = processproteinChannel(proteinip);
+        }
+        if (proteincounting)
+        {
+            ImagePlus outlines = countGreenMatches(proteinip);
+            outlines.show();
+        }
+        else
+            contarpositivos(proteinimage);
         // Save image calculation //
 
         // Create results dir
@@ -126,7 +155,7 @@ public class PCCNIF_Plugin implements PlugIn {
 
         // Save image
         //IJ.run(outlines, "8-bit", "");
-       // IJ.saveAs(outlines, "PNG", resultsPath + "\\" + name + " - result.bmp");
+        // IJ.saveAs(outlines, "PNG", resultsPath + "\\" + name + " - result.bmp");
 
         // Save count results
         IJ.saveAs("Results", resultsPath + "\\Results.xls");
@@ -135,22 +164,24 @@ public class PCCNIF_Plugin implements PlugIn {
         //outlines.close();
     }
 
+
     /*
     * Channel is the red channel that contains the cells' nuclei
     * @return mask a binary mask representing the nuclei morphology for all cells
     */
     private ImagePlus generateNucleiMask(ImagePlus redChannel) {
 
+        IJ.run(redChannel, "8-bit", "");
         // Pre-processing //
-
-        IJ.run(redChannel, "Enhance Contrast...", "saturated=0.9 equalize");
+        IJ.run(redChannel, "Enhance Contrast...", "saturated=" + enhancecontrastsaturated + " equalize");
 
         // Processing //
         // Subtract background
-        IJ.run(redChannel, "Subtract Background...", "rolling=50");
+        IJ.run(redChannel, "Subtract Background...", "rolling="+substractbackgroundrolling);
 
         // Threshold with black background
         IJ.setAutoThreshold(redChannel, "Default dark");
+        IJ.setThreshold(redChannel,nucleithresholdMin,nucleithresholdMax);
         Prefs.blackBackground = true;
 
         // Convert to mask
@@ -158,12 +189,10 @@ public class PCCNIF_Plugin implements PlugIn {
 
         // Apply closing operation to fill holes in cell nuclei
         IJ.run(redChannel, "Close-", "");
-
         // Apply watershed filter to separate nuclei clusters
         IJ.run(redChannel, "Watershed", "");
 
-        IJ.run(redChannel, "Analyze Particles...", "size="+nucleicSizeMin+"-"+nucleicSizeMax+" circularity="+circularityMin+"-1.00 show=Outlines display clear record in_situ");
-        nucleos = (ResultsTable) ResultsTable.getResultsTable().clone();
+
         return redChannel;
     }
 
@@ -180,40 +209,68 @@ public class PCCNIF_Plugin implements PlugIn {
        * @param imp the segmented image of channel 3 with the channel 0 mask
        * @return the outline of all positive matches
     */
-    public ImagePlus countGreenMatches(ImagePlus imp) {
 
+    public ImagePlus processproteinChannel(ImagePlus imp) {
         IJ.run(imp, "8-bit", "");
         IJ.run(imp, "Enhance Contrast...", "saturated=0.9 equalize");
         IJ.run(imp, "Subtract Background...", "rolling=50");
-        IJ.setThreshold(imp, thresholdMin, thresholdMax);
+        IJ.setThreshold(imp, proteinthresholdMin, proteinthresholdMax);
         Prefs.blackBackground = true;
         IJ.run(imp, "Convert to Mask", "");
-        IJ.run("Set Measurements...", "area centroid center  shape decimal=3");
+        return imp;
+    };
+
+    public int contarpositivos(ImageProcessor imp) {
+        int cantidadpositivos = 0;
+        for (int i=0;i<ResultsTable.getResultsTable().size()-1;i++)
+        {
+            // obtener el ROI de los núcleos
+            int area = (int) ResultsTable.getResultsTable().getValue("Area",i);
+            int x = (int) ResultsTable.getResultsTable().getValue("BX",i);
+            int y = (int) ResultsTable.getResultsTable().getValue("BY",i);
+            int width = (int) ResultsTable.getResultsTable().getValue("Width",i);
+            int height = (int) ResultsTable.getResultsTable().getValue("Height",i);
+            // get all type-specific pixels (fast)
+            // in this example, a ByteProcessor
+            int cantidadmayorathreshold = 0;
+            for (int k = x; k < x+width; k++)
+                for (int l = y; l < y+height; l++) {
+                    // Java has no unsigned 8-bit data type, so we need to perform Boolean arithmetics
+                    int value = imp.getPixel(k,l);
+                    if (value > proteinthreshold)
+                        cantidadmayorathreshold++;
+                }
+            if (cantidadmayorathreshold/area > 0.5)
+                cantidadpositivos++;
+        }
+        return cantidadpositivos;
+    }
+
+    public ImagePlus countGreenMatches(ImagePlus imp) {
+
+        IJ.run("Set Measurements...", "area centroid center shape decimal=3");
         IJ.run(imp, "Analyze Particles...", "size="+proteinSizeMin+"-"+proteinSizeMax+" circularity=0.00-1.00 show=Outlines display clear record in_situ");
         verdes = (ResultsTable) ResultsTable.getResultsTable().clone();
         // Return imp modified
         double[] nucleosX = nucleos.getColumnAsDoubles(ResultsTable.X_CENTER_OF_MASS);
-        System.out.println("nucleosX: "+nucleosX.length);
         double[] nucleosY = nucleos.getColumnAsDoubles(ResultsTable.Y_CENTER_OF_MASS);
         double[] areas = nucleos.getColumnAsDoubles(ResultsTable.AREA);
         double[] CIs = nucleos.getColumnAsDoubles(ResultsTable.ROUNDNESS);
         double[] verdesX = verdes.getColumnAsDoubles(ResultsTable.X_CENTER_OF_MASS);
-        System.out.println("verdesX: "+verdesX.length);
         double[] verdesY = verdes.getColumnAsDoubles(ResultsTable.Y_CENTER_OF_MASS);
         Vector<Vector<Integer>> result = new Vector<Vector<Integer>>();
-        System.out.println(imp.getWidth()+" ,  "+imp.getHeight());
         for (int i=0; i<verdesX.length; i++){
             boolean found = false;
             int j=0;
             while(j<nucleosX.length && !found){
-                if(Math.abs(nucleosX[j]-verdesX[i])<1500 && Math.abs(nucleosY[j]-verdesY[i])<1500){
+                if(Math.abs(nucleosX[j]-verdesX[i])<2*nucleicSizeMax && Math.abs(nucleosY[j]-verdesY[i])<2*nucleicSizeMax){
                     double radio = areas[j]/Math.PI;
                     double dist = Math.pow(nucleosX[j]-verdesX[i], 2) + Math.pow(nucleosY[j]-verdesY[i], 2);
 
                     if(dist<= radio+ 2*radio*CIs[j]+CIs[j]*CIs[j]){
                         Vector<Integer> v = new Vector<Integer>();
-                        v.add((int) (Math.min(2*nucleosX[j], imp.getWidth())));
-                        v.add((int) (Math.min(2*nucleosY[j], imp.getHeight())));
+                        v.add((int) nucleosX[j]);
+                        v.add((int) nucleosY[j]);
                         result.add(v);
                         found = true;
                     }
@@ -227,9 +284,6 @@ public class PCCNIF_Plugin implements PlugIn {
         }
         String resultXML = createXMLFromPoints(result);
         IJ.saveString(resultXML, resultPath);
-        System.out.println(result);
-        System.out.println(result.size());
-        System.out.println("version 8");
         ResultsTable.getResultsTable().show("Results");
         imp.show();
         return imp;
@@ -239,7 +293,7 @@ public class PCCNIF_Plugin implements PlugIn {
 
     String createXMLFromPoints(Vector<Vector<Integer>> v){
         String s = "";
-        s+="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <CellCounter_Marker_File> <Image_Properties> <Image_Filename>"+name+"</Image_Filename> </Image_Properties> ";
+        s+="<?xml version=\"1.0\" encoding=\"UTF-8\"?> <CellCounter_Marker_File> <Image_Properties> <Image_Filename>Counter Window - "+name+"</Image_Filename> </Image_Properties> ";
         s+="<Marker_Data> <Current_Type>1</Current_Type> <Marker_Type> <Type>1</Type> ";
         for(Vector point : v) {
             s+="<Marker > <MarkerX > "+point.elementAt(0)+" </MarkerX > <MarkerY > "+point.elementAt(1)+" </MarkerY > <MarkerZ > 1 </MarkerZ >  </Marker > ";
